@@ -5,6 +5,7 @@ import { NewNote } from "./NewNote";
 import { useLocalStorage } from "./useLocalStorage"
 import { useMemo } from "react"
 import { v4 as uuidV4 } from "uuid";
+import { NoteList } from "./NoteList";
 
 export type Note = {
   id: string
@@ -54,10 +55,35 @@ function App() {
     setTags(prev => [...prev, tag])
   }
 
+  function updateTag(id: string, label: string) {
+    setTags(prevTags => {
+      return prevTags.map(tag => {
+        if (tag.id === id) {
+          return { ...tag, label }
+        } else {
+          return tag
+        }
+      })
+    })
+  }
+
+  function deleteTag(id: string) {
+    setTags(prevTags => {
+      return prevTags.filter(tag => tag.id !== id)
+    })
+  }
+
   return (
     <Container className="my-4">
       <Routes>
-        <Route path="/" element={<h1>Home</h1>} />
+        <Route path="/" element={
+            <NoteList
+              notes={notesWithTags}
+              availableTags={tags}
+              onUpdateTag={updateTag}
+              onDeleteTag={deleteTag}
+            />
+          }/>
         <Route path="/new" element={<NewNote onSubmit={onCreateNote} onAddTag={addTag}  availableTags={tags} />} />
         <Route path="/:id">
           <Route index element={<h1>Show</h1>} />
